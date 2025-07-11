@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+</head>
+
+<body>
+    <h2>Teste WebSocket com Spring Boot</h2>
+
+    <input type="text" id="msg" placeholder="Digite uma mensagem" />
+    <button onclick="sendMessage()">Enviar</button>
+
+    <p><strong>Resposta:</strong><span id="response"></span></p>
+
+    <script>
+        let socket = new SockJS("/ws");
+        let stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, function (frame) {
+            console.log("Conectado: " + frame);
+
+            stompClient.subscribe("/topic/greetings", function (message) {
+                document.getElementById("response").innerText = message.body;
+            });
+        });
+
+        function sendMessage() {
+            let msg = document.getElementById("msg").value;
+            stompClient.send("/app/hello", {}, msg);
+        }
+    </script>
+</body>
+</html>
